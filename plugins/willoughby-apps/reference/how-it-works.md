@@ -168,11 +168,26 @@ system may be paused: say so plainly, and offer `/willoughby-apps:help`.
 ## Testers
 
 `testers.txt` in the repo lists who can install the app from TestFlight: one
-email address per line, lines starting with `#` are notes. Up to 25 people.
-After a push, Andrew's system invites the new ones (Apple emails them) and
-removes the ones taken off. Before an app's first build reaches outside
-testers, Apple reviews it, which can take a day or two. Testers see Andrew's
-name as the developer.
+email address per line (a name may follow the address, like
+`mom@example.com Jane Cohen`), lines starting with `#` are notes. Up to 25
+people.
+
+- **Friends and family** go above any `# external:` line. Andrew's system
+  invites each one to his Apple team with the lowest role, able to see this
+  one app only. Apple emails them; they accept within 3 days (a missed one is
+  sent again), then TestFlight emails them and every version reaches them
+  with no wait for Apple.
+- **Outside testers** go below a line that says exactly `# external:`. They
+  join the app's outside test group instead, and Apple reviews each new
+  version before they get it, which can take a day or two.
+- **Nothing changes until Andrew approves it.** A pushed change to
+  `testers.txt` alone becomes a "Testers request" issue in the repo (opened by
+  `willoughby-apps-bot[bot]`, status `willoughby/testers-request` on the
+  commit); a change pushed with other changes goes with the next release
+  request. When Andrew approves, the new people are invited and the removed
+  ones lose access; the bot then comments on that commit and sets
+  `willoughby/testers`. Rejected, his reason is on the issue.
+- Testers see Andrew's name as the developer.
 
 ## Asking Andrew
 

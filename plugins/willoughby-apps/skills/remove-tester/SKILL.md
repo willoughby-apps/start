@@ -79,6 +79,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk that way, and read
 4. Delete that line only. Keep the notes and every other line as they are.
 5. Commit ("Remove a tester") and push `main`, the same way the check does
    (`${CLAUDE_PLUGIN_ROOT}/skills/check/SKILL.md`, step 1).
-6. Tell them: Andrew's system takes the person off the app's testers in
-   TestFlight shortly; they stop getting new versions. Apple does not email
-   them about it.
+6. Tell them: Andrew approves tester changes first (a "Testers request"
+   opens in the app's repo within a few minutes). Once he does, the person
+   loses access to the app in TestFlight and stops getting new versions.
+   Apple does not email them about it.
