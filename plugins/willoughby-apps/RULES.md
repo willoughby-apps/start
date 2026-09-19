@@ -12,6 +12,10 @@ something a rule forbids, stop and use `/willoughby-apps:help` so Andrew can dec
 
 - Your app's bundle ID is set by Andrew when he approves the app. Never change it.
 
+### The app icon
+
+- The app icon is a square PNG of exactly 1024 by 1024 pixels with no transparency (no alpha channel). Make one with /willoughby-apps:icon.
+
 ### project.yml
 
 - The app is described by `project.yml` at the top of the repo. Keep it there.

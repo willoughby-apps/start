@@ -1,18 +1,27 @@
----
-name: setup
-description: First-time setup for making iPhone apps with Andrew. Installs git and the GitHub tool, signs in to GitHub, redeems the invite code from Andrew's message, and puts the person's first app on this computer. Use when someone pastes Andrew's setup message or their invite code, or says they are setting up.
-argument-hint: <invite code, like ABCD-EFGH>
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
----
+<!-- GENERATED from plugins/willoughby-apps/skills/setup/SKILL.md. Do not edit by hand:
+     the publish step refuses a copy that differs from the skill. -->
+
+# Willoughby Apps: setup guide for Claude
+
+These are the same steps as the `willoughby-apps` plugin's setup skill
+(`/willoughby-apps:setup`). Andrew's message asks Claude to read this file
+right after adding the helper, so setup starts at once, with no restart.
+
+Every path below that starts with `plugins/willoughby-apps/` is inside the
+folder that holds this file: on a Mac
+`~/.claude/plugins/marketplaces/willoughby-apps/`, on Windows
+`%USERPROFILE%\.claude\plugins\marketplaces\willoughby-apps\`. If that
+folder is missing, read the same path from
+`https://raw.githubusercontent.com/willoughby-apps/start/main/`.
 
 # Setup
 
 The person pasted Andrew's setup message, or their invite code.
-Their invite code: `$ARGUMENTS` (if that is empty, find it in the message they pasted).
+Their invite code is in the message they pasted.
 
-First read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk the way it says for
-the whole setup, and read `${CLAUDE_PLUGIN_ROOT}/reference/how-it-works.md`
-and `${CLAUDE_PLUGIN_ROOT}/reference/screens.md` (every screen they will see,
+First read `plugins/willoughby-apps/agents/guide.md` and talk the way it says for
+the whole setup, and read `plugins/willoughby-apps/reference/how-it-works.md`
+and `plugins/willoughby-apps/reference/screens.md` (every screen they will see,
 one at a time).
 
 ## Before you start
@@ -295,4 +304,4 @@ End with, in plain words:
   description.
 
 If they would like to start right now, ask what the app should be and carry
-on with `${CLAUDE_PLUGIN_ROOT}/skills/make/SKILL.md` in the app's folder.
+on with `plugins/willoughby-apps/skills/make/SKILL.md` in the app's folder.

@@ -1,6 +1,6 @@
 ---
 name: new-app
-description: Ask Andrew for a brand new app. Interviews the person about what it does, who it is for, its name and its look, proposes a short plan, and once they agree sends the request to Andrew. Use when they want to make another app rather than change the one they have.
+description: Ask Andrew for a SECOND app, alongside the one they have. Interviews the person, proposes a short plan, and once they agree sends the request to Andrew. Use only when they already have an app of their own and want another one next to it; their first idea always replaces the starter app in place instead (the make loop).
 argument-hint: [the idea, in their words]
 allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
 ---
@@ -11,7 +11,13 @@ Read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk that way, and read
 `${CLAUDE_PLUGIN_ROOT}/reference/how-it-works.md`. Their idea, if they gave
 one: `$ARGUMENTS`
 
-Each new app is its own repo that Andrew sets up. This skill only asks him; it
+**One app slot first.** If their only app is still the starter app (its screen
+says hello and `CHANGELOG.md` has only the `1.0` entry), do not use this skill:
+their idea becomes that app, in place, through
+`${CLAUDE_PLUGIN_ROOT}/skills/make/SKILL.md`. Tell them so ("Your first app
+is waiting to become this, so no need to ask Andrew").
+
+A second app is its own repo that Andrew sets up. This skill only asks him; it
 never creates a repo, a folder or any code.
 
 ## 1. Interview

@@ -1,6 +1,6 @@
 ---
 name: release
-description: Put a new version of the person's app on their phone. Bumps the version, writes a plain-English note for the TestFlight "What to Test" box, tags and pushes it, and explains that Andrew approves each release. Use when they want the latest changes on their phone or to share them with testers.
+description: Put a new version of the person's app on their phone. Bumps the version, writes a plain-English note for the TestFlight "What to Test" box, tags and pushes it, and explains that Andrew approves each release. Use when they say yes to "Send it to Andrew?", or ask to put it on their phone, send it to Andrew, or share it with testers.
 argument-hint: [what is new, in their words]
 allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
 ---
@@ -50,7 +50,9 @@ passed: a release that fails its check never reaches Andrew.
 ## 5. Explain what happens next
 
 Tell them, in plain words:
-- Andrew's system checks and builds this version (15 to 30 minutes).
+- Andrew's system checks and builds this version (15 to 30 minutes), and
+  from their idea to their phone is usually 20 to 40 minutes plus Andrew's
+  approval.
 - When it passes, a note called "Release request: v1.1" appears in their app's
   GitHub page and GitHub emails them about it.
 - Andrew reads a safety review of the changes and approves it himself. When he

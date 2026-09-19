@@ -1,6 +1,6 @@
 ---
 name: check
-description: Save the person's app changes, send them to GitHub, and wait for Andrew's system to check and build the app, then fix anything it reports (up to three rounds) and show a picture of the app. Use after changing the app, or when they ask whether it works or what it looks like.
+description: Save the person's app changes, send them to GitHub, and wait for Andrew's system to check and build the app, then fix anything it reports (up to three rounds) and show pictures of the app and its icon. Part of the make loop; use it on its own after changing the app, or when they ask "does it work?", "what does it look like?" or "is it done?".
 allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
 ---
 
@@ -47,10 +47,13 @@ built").
 
 Read the newest commit comment on that commit from `willoughby-apps-bot[bot]`.
 
-- **success**: fetch the screenshot the comment names into a temporary folder
-  outside the repo, look at it, and tell them what the app looks like now. Open
-  it for them if they want to see it. Say the change is checked and will be on
-  their phone after the next release (`/willoughby-apps:release`).
+- **success**: fetch the screenshot the comment names, and the icon when it
+  shows one, into a temporary folder outside the repo, look at them, and tell
+  them what the app looks like now. Open them for them. Then ask **"Send it to
+  Andrew?"** (Andrew approves it, then it goes to TestFlight on their phone);
+  on a yes follow `${CLAUDE_PLUGIN_ROOT}/skills/release/SKILL.md` from its
+  step 2. If this check is part of the make loop
+  (`${CLAUDE_PLUGIN_ROOT}/skills/make/SKILL.md`), carry on with its step 5.
 - **failure**: the comment lists each blocked rule with its file, line and fix,
   or the compile errors. Fix them in the app (follow each "Fix:" line; read
   `RULES.md` for the rule), then go back to step 1. Tell them in one sentence

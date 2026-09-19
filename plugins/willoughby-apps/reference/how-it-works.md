@@ -36,6 +36,41 @@ Facts for Claude. The person you are helping never needs to read this.
   if an entry is missing, add it there, never to a committed `.gitignore`.
 - Write text files as UTF-8 without a byte order mark.
 
+## One app, in place
+
+- Each person starts with **one app slot**: their `<guest>-hello` repo, whose
+  bundle ID and App Store record Andrew already made. Their **first idea
+  replaces the starter app in place**: same repo, same folder, same bundle ID,
+  same TestFlight entry. It needs nothing from Andrew but the usual approval of
+  the release. A `new-app` request is only for a **second** app alongside one
+  that already does something.
+- **The name under the icon** on the home screen is `CFBundleDisplayName` in
+  the app target's `info: properties:` in `project.yml`. Change only that to
+  rename the app. Never change `name:`, the target's name, `PRODUCT_NAME`, the
+  bundle ID or the repo's name. TestFlight's own list may keep showing the name
+  Andrew gave the app record ("Hello by Sam") until he renames it; that is
+  expected.
+- **The icon** is `App/Assets.xcassets/AppIcon.appiconset/AppIcon.png`: a
+  1024 by 1024 PNG, RGB with no transparency (the rule `app_icon.invalid`).
+  Make it with `/willoughby-apps:icon`. The check's report shows it beside the
+  screenshot.
+
+## The loop
+
+When the person asks for anything in their own words, run the whole loop in
+the make skill: build, push, wait for the check, fix what it reports (three
+rounds at most), show the screenshot and the icon, ask **"Send it to
+Andrew?"**, and on a yes, release. Commands are only shortcuts into it.
+
+- **Timing**: a check takes 15 to 30 minutes; from an idea to the app on their
+  phone is usually **20 to 40 minutes**, plus the time Andrew takes to approve.
+- **Usage**: making an app uses a good share of a Claude Pro plan's usage. If
+  the limit is reached, nothing is lost; they come back when Claude says it
+  resets and say "keep going", and you pick up from the repo's state.
+- **Permissions**: the app folder's `.claude/settings.json` lets you run the
+  `git` and `gh` commands this loop uses, and `sips` on a Mac, without asking
+  each time. Everything else still asks; say what it is for first.
+
 ## The rules
 
 The plugin's `RULES.md` (the same text as the Rules section of the app's
