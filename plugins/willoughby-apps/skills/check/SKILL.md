@@ -1,7 +1,65 @@
 ---
 name: check
 description: Save the person's app changes, send them to GitHub, and wait for Andrew's system to check and build the app, then fix anything it reports (up to three rounds) and show pictures of the app and its icon. Part of the make loop; use it on its own after changing the app, or when they ask "does it work?", "what does it look like?" or "is it done?".
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git status)
+  - Bash(git status --porcelain)
+  - Bash(git status -sb)
+  - Bash(git add -A)
+  - Bash(git commit -m *)
+  - Bash(git push origin main)
+  - Bash(git push origin main --follow-tags)
+  - Bash(git pull --rebase origin main)
+  - Bash(git rebase --abort)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git rev-parse HEAD)
+  - Bash(git tag -a v*)
+  - Bash(git ls-remote --tags origin)
+  - Bash(git config user.name *)
+  - Bash(git config user.email *)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh issue list *)
+  - Bash(gh issue view *)
+  - Bash(gh issue create -R willoughby-apps/*)
+  - Bash(gh label create new-app -R willoughby-apps/*)
+  - Bash(gh label create needs-andrew -R willoughby-apps/*)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh repo clone willoughby-apps/*)
+  - Bash(gh auth status)
+  - PowerShell(git status)
+  - PowerShell(git status --porcelain)
+  - PowerShell(git status -sb)
+  - PowerShell(git add -A)
+  - PowerShell(git commit -m *)
+  - PowerShell(git push origin main)
+  - PowerShell(git push origin main --follow-tags)
+  - PowerShell(git pull --rebase origin main)
+  - PowerShell(git rebase --abort)
+  - PowerShell(git log *)
+  - PowerShell(git diff *)
+  - PowerShell(git show *)
+  - PowerShell(git rev-parse HEAD)
+  - PowerShell(git tag -a v*)
+  - PowerShell(git ls-remote --tags origin)
+  - PowerShell(git config user.name *)
+  - PowerShell(git config user.email *)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh issue list *)
+  - PowerShell(gh issue view *)
+  - PowerShell(gh issue create -R willoughby-apps/*)
+  - PowerShell(gh label create new-app -R willoughby-apps/*)
+  - PowerShell(gh label create needs-andrew -R willoughby-apps/*)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh repo clone willoughby-apps/*)
+  - PowerShell(gh auth status)
 ---
 
 # Check
@@ -48,7 +106,8 @@ built").
 Read the newest commit comment on that commit from `willoughby-apps-bot[bot]`.
 
 - **success**: fetch the screenshot the comment names, and the icon when it
-  shows one, into a temporary folder outside the repo, look at them, and tell
+  shows one, into the app folder's `build` folder (how-it-works, "What
+  happens after a push"), look at them, and tell
   them what the app looks like now. Open them for them. Then ask **"Send it to
   Andrew?"** (Andrew approves it, then it goes to TestFlight on their phone);
   on a yes follow `${CLAUDE_PLUGIN_ROOT}/skills/release/SKILL.md` from its

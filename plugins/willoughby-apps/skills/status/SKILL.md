@@ -1,7 +1,65 @@
 ---
 name: status
 description: Say where everything stands with the person's apps, in plain words, covering the latest check, releases waiting for Andrew, requests and questions to Andrew, and any new app waiting to be brought onto this computer. Use when they ask how things are going, whether a version is on its way, or what happened to a request.
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git status)
+  - Bash(git status --porcelain)
+  - Bash(git status -sb)
+  - Bash(git add -A)
+  - Bash(git commit -m *)
+  - Bash(git push origin main)
+  - Bash(git push origin main --follow-tags)
+  - Bash(git pull --rebase origin main)
+  - Bash(git rebase --abort)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git rev-parse HEAD)
+  - Bash(git tag -a v*)
+  - Bash(git ls-remote --tags origin)
+  - Bash(git config user.name *)
+  - Bash(git config user.email *)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh issue list *)
+  - Bash(gh issue view *)
+  - Bash(gh issue create -R willoughby-apps/*)
+  - Bash(gh label create new-app -R willoughby-apps/*)
+  - Bash(gh label create needs-andrew -R willoughby-apps/*)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh repo clone willoughby-apps/*)
+  - Bash(gh auth status)
+  - PowerShell(git status)
+  - PowerShell(git status --porcelain)
+  - PowerShell(git status -sb)
+  - PowerShell(git add -A)
+  - PowerShell(git commit -m *)
+  - PowerShell(git push origin main)
+  - PowerShell(git push origin main --follow-tags)
+  - PowerShell(git pull --rebase origin main)
+  - PowerShell(git rebase --abort)
+  - PowerShell(git log *)
+  - PowerShell(git diff *)
+  - PowerShell(git show *)
+  - PowerShell(git rev-parse HEAD)
+  - PowerShell(git tag -a v*)
+  - PowerShell(git ls-remote --tags origin)
+  - PowerShell(git config user.name *)
+  - PowerShell(git config user.email *)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh issue list *)
+  - PowerShell(gh issue view *)
+  - PowerShell(gh issue create -R willoughby-apps/*)
+  - PowerShell(gh label create new-app -R willoughby-apps/*)
+  - PowerShell(gh label create needs-andrew -R willoughby-apps/*)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh repo clone willoughby-apps/*)
+  - PowerShell(gh auth status)
 ---
 
 # Status
@@ -29,7 +87,7 @@ For each of their apps, gather quietly (do not narrate every command):
 - **Unsaved work** in its folder (`git status --porcelain`) and commits not yet
   sent (`git status -sb` shows "ahead").
 - **The latest check**: the newest commit on `main`
-  (`gh api repos/willoughby-apps/REPO/commits/main --jq .sha`) and its newest
+  (`gh api repos/willoughby-apps/REPO/commits/main --jq .sha --method GET --hostname github.com`) and its newest
   `willoughby/check` status from `willoughby-apps-bot[bot]`.
 - **The latest version**: `MARKETING_VERSION` in `project.yml`, the newest `v`
   tag (`git ls-remote --tags origin`) and its `willoughby/release` status.

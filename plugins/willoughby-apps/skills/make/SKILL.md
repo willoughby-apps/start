@@ -2,7 +2,65 @@
 name: make
 description: The whole loop for the person's app, from their plain words to their phone. Use whenever they ask for anything about their app in their own words, such as "make me a gym app for tracking workouts", "change the color to green", "add a timer", "make the text bigger", "it should remember my scores" or "fix the button". Builds the change, sends it for Andrew's checks, fixes what they report (three rounds), shows pictures of the app, asks "Send it to Andrew?", and then releases it. The other helpers are shortcuts into parts of this loop.
 argument-hint: [what they want, in their words]
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git status)
+  - Bash(git status --porcelain)
+  - Bash(git status -sb)
+  - Bash(git add -A)
+  - Bash(git commit -m *)
+  - Bash(git push origin main)
+  - Bash(git push origin main --follow-tags)
+  - Bash(git pull --rebase origin main)
+  - Bash(git rebase --abort)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git rev-parse HEAD)
+  - Bash(git tag -a v*)
+  - Bash(git ls-remote --tags origin)
+  - Bash(git config user.name *)
+  - Bash(git config user.email *)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh issue list *)
+  - Bash(gh issue view *)
+  - Bash(gh issue create -R willoughby-apps/*)
+  - Bash(gh label create new-app -R willoughby-apps/*)
+  - Bash(gh label create needs-andrew -R willoughby-apps/*)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh repo clone willoughby-apps/*)
+  - Bash(gh auth status)
+  - PowerShell(git status)
+  - PowerShell(git status --porcelain)
+  - PowerShell(git status -sb)
+  - PowerShell(git add -A)
+  - PowerShell(git commit -m *)
+  - PowerShell(git push origin main)
+  - PowerShell(git push origin main --follow-tags)
+  - PowerShell(git pull --rebase origin main)
+  - PowerShell(git rebase --abort)
+  - PowerShell(git log *)
+  - PowerShell(git diff *)
+  - PowerShell(git show *)
+  - PowerShell(git rev-parse HEAD)
+  - PowerShell(git tag -a v*)
+  - PowerShell(git ls-remote --tags origin)
+  - PowerShell(git config user.name *)
+  - PowerShell(git config user.email *)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh issue list *)
+  - PowerShell(gh issue view *)
+  - PowerShell(gh issue create -R willoughby-apps/*)
+  - PowerShell(gh label create new-app -R willoughby-apps/*)
+  - PowerShell(gh label create needs-andrew -R willoughby-apps/*)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh repo clone willoughby-apps/*)
+  - PowerShell(gh auth status)
 ---
 
 # Make it
@@ -72,7 +130,8 @@ that a check takes 15 to 30 minutes, a good time for a coffee.
 ## 5. Show it
 
 When it passes, fetch the screenshot (and the icon, when the report shows one)
-into a temporary folder, look at them yourself, and open them for the person.
+into the app folder's `build` folder, look at them yourself, and open them for
+the person.
 Say what they are looking at, and whether it matches what they asked for. If
 it does not look right to you, say so, fix it, and check again (it counts as a
 round).

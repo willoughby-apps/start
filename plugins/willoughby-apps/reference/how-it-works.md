@@ -68,8 +68,27 @@ Andrew?"**, and on a yes, release. Commands are only shortcuts into it.
   the limit is reached, nothing is lost; they come back when Claude says it
   resets and say "keep going", and you pick up from the repo's state.
 - **Permissions**: the app folder's `.claude/settings.json` lets you run the
-  `git` and `gh` commands this loop uses, and `sips` on a Mac, without asking
-  each time. Everything else still asks; say what it is for first.
+  exact `git` and `gh` commands this loop uses, and `sips` on a Mac, without
+  asking each time. Write them exactly as the helpers do: the list names each
+  command with its options, so the same command with other options asks, and
+  some are refused outright (force pushes, deleting tags, options that write
+  files or run programs). Everything else still asks; say what it is for
+  first. Three things make every command ask:
+  - Claude was **not started in the app folder** (the folder's list loads only
+    there). Then say so, and ask them to quit Claude and open it again in the
+    app folder (setup's "Finish" says how).
+  - The person has **not yet trusted the folder**: the first time Claude opens
+    in it, it asks whether they trust the folder and lists the commands it
+    lets you run (screens.md, "Claude: trusting the app folder"). Until they
+    say yes, the list is not used.
+  - A command that **starts with `cd`** into another folder, or (on Windows)
+    with the `$env:Path` refresh that setup used. Run commands from the app
+    folder itself, one per line; in the app folder a new Claude already has
+    git and gh on its path.
+- **Reading from GitHub**: every `gh api` read of `repos/willoughby-apps/...`
+  ends with exactly `--method GET --hostname github.com`, as the last two
+  options. That is the form the folder allows: gh uses the last `--method` and
+  `--hostname` it is given, so that command can only read from GitHub.
 
 ## The rules
 
@@ -103,8 +122,8 @@ author is **`willoughby-apps-bot[bot]`**: `creator.login` on a status,
 Commands (replace `REPO` and `SHA`):
 
 ```
-gh api repos/willoughby-apps/REPO/commits/SHA/statuses
-gh api repos/willoughby-apps/REPO/commits/SHA/comments
+gh api repos/willoughby-apps/REPO/commits/SHA/statuses --method GET --hostname github.com
+gh api repos/willoughby-apps/REPO/commits/SHA/comments --method GET --hostname github.com
 ```
 
 Statuses come newest first. Use the newest one whose `context` is right and
@@ -112,10 +131,12 @@ whose `creator.login` is `willoughby-apps-bot[bot]`. Its `target_url` is the
 run on GitHub, which is public: never send the person there, since it shows
 nothing of their app.
 
-The comment's screenshot line tells you how to fetch the picture with `gh api`.
-Save it **outside the repo** (a temporary folder), look at it yourself with your
-file reading tool, and open it for the person if they want to see it (`open
-FILE` on a Mac, `Start-Process FILE` on Windows).
+The comment's screenshot line gives the `gh api` command that fetches the
+picture. Run it exactly, saving into the app folder's `build` folder (make it if
+it is not there; `.git/info/exclude` keeps `build/` out of every commit, and a
+file inside the app folder saves without asking): `... > build/screenshot.png`.
+Look at it yourself with your file reading tool, and open it for the person if
+they want to see it (`open FILE` on a Mac, `Start-Process FILE` on Windows).
 
 ## Waiting
 
@@ -130,8 +151,10 @@ system may be paused: say so plainly, and offer `/willoughby-apps:help`.
 - The version shown to people is `MARKETING_VERSION` in `project.yml`
   (quoted, like `"1.1"`). Never touch `CURRENT_PROJECT_VERSION` or the bundle
   ID; Andrew's system sets the build number.
-- A release is a tag `v<version>` (like `v1.1`, only digits and dots) on a
-  commit on `main`, pushed to GitHub. Its check posts `willoughby/release`.
+- A release is an annotated tag `v<version>` (like `v1.1`, only digits and
+  dots) on a commit on `main`, sent with `git push origin main --follow-tags`
+  (which sends new tags only, never a moved one). Its check posts
+  `willoughby/release`.
 - When that check passes, Andrew's system opens an issue titled
   `Release request: v<version>`, labelled `release-request`, in the app's
   repo, and GitHub emails the person. Only an issue opened by

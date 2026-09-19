@@ -2,7 +2,29 @@
 name: setup
 description: First-time setup for making iPhone apps with Andrew. Installs git and the GitHub tool, signs in to GitHub, redeems the invite code from Andrew's message, and puts the person's first app on this computer. Use when someone pastes Andrew's setup message or their invite code, or says they are setting up.
 argument-hint: <invite code, like ABCD-EFGH>
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git --version)
+  - Bash(gh --version)
+  - Bash(gh auth status)
+  - Bash(gh auth setup-git)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh issue list -R willoughby-apps/pipeline --author @me --state all --json number,createdAt)
+  - Bash(gh issue view * -R willoughby-apps/pipeline --comments)
+  - PowerShell(git --version)
+  - PowerShell(gh --version)
+  - PowerShell(gh auth status)
+  - PowerShell(gh auth setup-git)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh issue list -R willoughby-apps/pipeline --author @me --state all --json number,createdAt)
+  - PowerShell(gh issue view * -R willoughby-apps/pipeline --comments)
 ---
 
 # Setup
@@ -265,7 +287,7 @@ screen at a time from screens.md:
 ## Step 9: show the app is on its way
 
 For their first app repo, get the newest commit on `main`
-(`gh api repos/willoughby-apps/REPO/commits/main --jq .sha`) and read its
+(`gh api repos/willoughby-apps/REPO/commits/main --jq .sha --method GET --hostname github.com`) and read its
 `willoughby/check` status from `willoughby-apps-bot[bot]` (how-it-works has the
 command and the rule about whose status counts).
 
@@ -283,14 +305,25 @@ command and the rule about whose status counts).
 
 End with, in plain words:
 - setup is done, and what is on its way;
-- next time, open Claude in their app's folder (in a terminal: `cd` there
-  first, which you can do for them now by saying where it is; in the Claude
-  app: choose the folder `Documents > My Apps > REPO`), or just start Claude
-  and say "let's work on my app";
-- from now on they only say what they want, like **"make me a gym app for
-  tracking workouts"**. Their first idea turns the starter app into that app,
-  in place. You build it, have it checked, show them pictures, and ask "Send
-  it to Andrew?"; after his OK it arrives in TestFlight. From an idea to their
+- **one last thing with their hands: open Claude again, in the app's folder.**
+  This setup session did not start there, so the helper's commands and the
+  app folder's list of commands Claude may run without asking are not loaded
+  in it: carrying on here, Claude would ask them about every save and every
+  check. Tell them exactly what to do:
+  - in a terminal: type `/exit`, then paste the one line you give them, with
+    the real folder written out: on a Mac
+    `cd "$HOME/Documents/My Apps/REPO" && claude`; on Windows
+    `cd "$([Environment]::GetFolderPath('MyDocuments'))\My Apps\REPO"; claude`;
+  - in the Claude app: start a new session and choose the folder
+    `Documents > My Apps > REPO`;
+  - the first time, Claude asks whether they trust that folder and shows the
+    commands it lets Claude run (screens.md, "Claude: trusting the app
+    folder"): that is their own app from Andrew, and they choose yes;
+- after that, every time: open Claude in that same folder the same way, and
+  just say what they want, like **"make me a gym app for tracking
+  workouts"**. Their first idea turns the starter app into that app, in
+  place. You build it, have it checked, show them pictures, and ask "Send it
+  to Andrew?"; after his OK it arrives in TestFlight. From an idea to their
   phone is usually 20 to 40 minutes plus Andrew's approval;
 - making an app uses a good share of a Claude Pro plan's usage. If Claude says
   the limit is reached, nothing is lost: come back when it says, and say "keep
@@ -298,5 +331,6 @@ End with, in plain words:
 - they can offer it an icon any time: a picture of their own, or a
   description.
 
-If they would like to start right now, ask what the app should be and carry
-on with `${CLAUDE_PLUGIN_ROOT}/skills/make/SKILL.md` in the app's folder.
+If they would like to start right now, ask what the app should be, write it
+down for them in one sentence, and tell them to say exactly that once Claude
+is open in the app's folder. Do not start building it in this session.

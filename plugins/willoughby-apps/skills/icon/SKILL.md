@@ -2,7 +2,67 @@
 name: icon
 description: Make or change the person's app icon, the picture on the iPhone home screen. Works from any picture they have (a photo, a drawing, a logo) or from one they describe ("a blue dumbbell"). Squares it up, shows a preview and asks before using it, then saves it the way Apple needs. Use when they mention the icon, the app's picture, or how the app looks on the home screen.
 argument-hint: [a picture's location, or a description]
-allowed-tools: Bash(sips *) Bash(qlmanage *) Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git status)
+  - Bash(git status --porcelain)
+  - Bash(git status -sb)
+  - Bash(git add -A)
+  - Bash(git commit -m *)
+  - Bash(git push origin main)
+  - Bash(git push origin main --follow-tags)
+  - Bash(git pull --rebase origin main)
+  - Bash(git rebase --abort)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git rev-parse HEAD)
+  - Bash(git tag -a v*)
+  - Bash(git ls-remote --tags origin)
+  - Bash(git config user.name *)
+  - Bash(git config user.email *)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh issue list *)
+  - Bash(gh issue view *)
+  - Bash(gh issue create -R willoughby-apps/*)
+  - Bash(gh label create new-app -R willoughby-apps/*)
+  - Bash(gh label create needs-andrew -R willoughby-apps/*)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh repo clone willoughby-apps/*)
+  - Bash(gh auth status)
+  - PowerShell(git status)
+  - PowerShell(git status --porcelain)
+  - PowerShell(git status -sb)
+  - PowerShell(git add -A)
+  - PowerShell(git commit -m *)
+  - PowerShell(git push origin main)
+  - PowerShell(git push origin main --follow-tags)
+  - PowerShell(git pull --rebase origin main)
+  - PowerShell(git rebase --abort)
+  - PowerShell(git log *)
+  - PowerShell(git diff *)
+  - PowerShell(git show *)
+  - PowerShell(git rev-parse HEAD)
+  - PowerShell(git tag -a v*)
+  - PowerShell(git ls-remote --tags origin)
+  - PowerShell(git config user.name *)
+  - PowerShell(git config user.email *)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh issue list *)
+  - PowerShell(gh issue view *)
+  - PowerShell(gh issue create -R willoughby-apps/*)
+  - PowerShell(gh label create new-app -R willoughby-apps/*)
+  - PowerShell(gh label create needs-andrew -R willoughby-apps/*)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh repo clone willoughby-apps/*)
+  - PowerShell(gh auth status)
+  - Bash(sips *)
+  - Bash(qlmanage -t *)
 ---
 
 # The app icon
@@ -30,10 +90,17 @@ Windows has .NET's drawing library.
   to a temporary folder outside the app.
   - **Mac**: `qlmanage -t -s 1024 -o TMPDIR TMPDIR/icon.svg` makes
     `TMPDIR/icon.svg.png`.
-  - **Windows**: Microsoft Edge draws it:
-    `& "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe" --headless --disable-gpu --hide-scrollbars --window-size=1024,1024 --screenshot="TMPDIR\icon-svg.png" "file:///TMPDIR/icon.svg"`
-    (forward slashes in the `file:///` address). If Edge is not there, draw
-    the same shapes with the script below's `System.Drawing` calls instead.
+  - **Windows**: Microsoft Edge draws it, with this one command (PowerShell
+    does not wait for a program with a window when it is started with `&`,
+    so the next step would find no picture; `Start-Process -Wait` waits, and
+    its own `--user-data-dir` keeps it apart from an Edge that is already
+    open):
+    `Start-Process -Wait -FilePath "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe" -ArgumentList '--headless','--disable-gpu','--hide-scrollbars','--no-first-run','--window-size=1024,1024','--user-data-dir="TMPDIR\edge"','--screenshot="TMPDIR\icon-svg.png"','file:///TMPURL/icon.svg'`
+    with TMPDIR the folder as Windows writes it, and TMPURL the same folder
+    with forward slashes and each space written `%20`. Then check
+    `TMPDIR\icon-svg.png` is there before the next step. If Edge is not
+    there, or wrote nothing, draw the same shapes with the script below's
+    `System.Drawing` calls instead.
 
 ## 2. Make it square, 1024, no transparency
 

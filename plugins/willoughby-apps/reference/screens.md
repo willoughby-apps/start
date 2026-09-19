@@ -75,6 +75,24 @@ This comes from setup's step 4: Claude reads an 8-character code like
 The code lasts 15 minutes. If it has run out, Claude starts the sign-in again
 and reads a new code.
 
+## Claude: trusting the app folder
+
+The first time Claude opens in their app's folder (`Documents/My Apps/<repo>`),
+before anything else, Claude itself asks whether they trust the files in this
+folder, and lists what the folder's settings would let Claude do: the `git`
+and `gh` commands that save and send their app, and on a Mac `sips` and
+`qlmanage` (the icon). The wording and the buttons change between versions of
+Claude.
+
+1. Tell them before they open it that this question comes, that the folder is
+   their own app from Andrew, and that the list is the commands Claude uses to
+   save their app and send it to Andrew's checks.
+2. They choose the answer that trusts the folder and carries on (for example
+   **Yes, proceed** or **Trust**). It asks once per folder.
+3. If they said no, or Claude quit: open it again in the same folder, and
+   choose yes this time. Until they do, Claude asks before every command, and
+   a check (15 to 30 minutes of waiting) turns into a question every minute.
+
 ## Apple: joining Andrew's team
 
 Andrew invites their Apple ID email to his App Store Connect team, so they can

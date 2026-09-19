@@ -2,7 +2,65 @@
 name: release
 description: Put a new version of the person's app on their phone. Bumps the version, writes a plain-English note for the TestFlight "What to Test" box, tags and pushes it, and explains that Andrew approves each release. Use when they say yes to "Send it to Andrew?", or ask to put it on their phone, send it to Andrew, or share it with testers.
 argument-hint: [what is new, in their words]
-allowed-tools: Bash(git *) Bash(gh *) PowerShell(git *) PowerShell(gh *)
+allowed-tools:
+  - Bash(git status)
+  - Bash(git status --porcelain)
+  - Bash(git status -sb)
+  - Bash(git add -A)
+  - Bash(git commit -m *)
+  - Bash(git push origin main)
+  - Bash(git push origin main --follow-tags)
+  - Bash(git pull --rebase origin main)
+  - Bash(git rebase --abort)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git rev-parse HEAD)
+  - Bash(git tag -a v*)
+  - Bash(git ls-remote --tags origin)
+  - Bash(git config user.name *)
+  - Bash(git config user.email *)
+  - Bash(gh api user)
+  - Bash(gh api user --jq .login)
+  - Bash(gh api user/repository_invitations)
+  - Bash(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - Bash(gh issue list *)
+  - Bash(gh issue view *)
+  - Bash(gh issue create -R willoughby-apps/*)
+  - Bash(gh label create new-app -R willoughby-apps/*)
+  - Bash(gh label create needs-andrew -R willoughby-apps/*)
+  - Bash(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - Bash(gh repo clone willoughby-apps/*)
+  - Bash(gh auth status)
+  - PowerShell(git status)
+  - PowerShell(git status --porcelain)
+  - PowerShell(git status -sb)
+  - PowerShell(git add -A)
+  - PowerShell(git commit -m *)
+  - PowerShell(git push origin main)
+  - PowerShell(git push origin main --follow-tags)
+  - PowerShell(git pull --rebase origin main)
+  - PowerShell(git rebase --abort)
+  - PowerShell(git log *)
+  - PowerShell(git diff *)
+  - PowerShell(git show *)
+  - PowerShell(git rev-parse HEAD)
+  - PowerShell(git tag -a v*)
+  - PowerShell(git ls-remote --tags origin)
+  - PowerShell(git config user.name *)
+  - PowerShell(git config user.email *)
+  - PowerShell(gh api user)
+  - PowerShell(gh api user --jq .login)
+  - PowerShell(gh api user/repository_invitations)
+  - PowerShell(gh api repos/willoughby-apps/* --method GET --hostname github.com)
+  - PowerShell(gh issue list *)
+  - PowerShell(gh issue view *)
+  - PowerShell(gh issue create -R willoughby-apps/*)
+  - PowerShell(gh label create new-app -R willoughby-apps/*)
+  - PowerShell(gh label create needs-andrew -R willoughby-apps/*)
+  - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
+  - PowerShell(gh repo clone willoughby-apps/*)
+  - PowerShell(gh auth status)
 ---
 
 # Release
@@ -44,8 +102,11 @@ passed: a release that fails its check never reaches Andrew.
 1. In `project.yml`, change only the `MARKETING_VERSION` value, keeping the
    quotes (`MARKETING_VERSION: "1.1"`). Change nothing else there.
 2. Commit both files ("Release 1.1") and `git push origin main`.
-3. Tag that commit and push the tag:
-   `git tag -a v1.1 -m "Version 1.1"`, then `git push origin v1.1`.
+3. Tag that commit and send the tag:
+   `git tag -a v1.1 -m "Version 1.1"`, then `git push origin main --follow-tags`.
+   Check it arrived: `git ls-remote --tags origin` lists `refs/tags/v1.1`. If
+   it does not, the tag name was already on GitHub: never move or force it;
+   release the next version instead.
 
 ## 5. Explain what happens next
 
