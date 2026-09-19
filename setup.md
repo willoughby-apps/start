@@ -105,10 +105,14 @@ website for their app.
 Check `gh --version`. If it is missing:
 
 **Mac.** Use GitHub's own installer.
-1. Read `https://api.github.com/repos/cli/cli/releases/latest` with `curl -fsSL`
-   and take the asset named `gh_<version>_macOS_universal.pkg` and the
-   `gh_<version>_checksums.txt` asset.
-2. Download both into a new temporary folder (`mktemp -d`) with `curl -fsSL -o`.
+1. Find the newest version from where GitHub's "latest release" page lands:
+   `curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/cli/cli/releases/latest`
+   prints `https://github.com/cli/cli/releases/tag/v<version>`. (Not
+   `api.github.com`: without a sign-in it allows 60 requests an hour per
+   network and answers 403 after that.)
+2. Download `https://github.com/cli/cli/releases/download/v<version>/gh_<version>_macOS_universal.pkg`
+   and `https://github.com/cli/cli/releases/download/v<version>/gh_<version>_checksums.txt`
+   into a new temporary folder (`mktemp -d`) with `curl -fsSL -o`.
 3. Compare `shasum -a 256` of the package with its line in the checksums file.
    If it differs, delete it, stop, and tell them the download was damaged and
    you will try again.
