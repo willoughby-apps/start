@@ -125,8 +125,10 @@ Say: this sends Andrew's system the code, which gives them access to their app.
    `gh api user/repository_invitations`, and repos they can already see with
    `gh repo list willoughby-apps --json name`. If either shows a
    `willoughby-apps` repo, skip to step 6.
-2. **Already asked?** `gh issue list -R willoughby-apps/pipeline --author @me --state open --json number,title`.
-   If one titled `Enroll <username>` is open, do not open another; go to 4 and wait.
+2. **Already asked?** `gh issue list -R willoughby-apps/pipeline --author @me --state all --json number,createdAt`.
+   If they opened one in the last 30 minutes, do not open another; go to 4
+   and wait on it. Never open more than three in a day: after that the code
+   is not even checked.
 3. Otherwise open the enroll issue in the public repo `willoughby-apps/pipeline`,
    with exactly this title and body and nothing else (no email, no other text):
 
@@ -145,12 +147,16 @@ Say: this sends Andrew's system the code, which gives them access to their app.
    `gh issue create -R willoughby-apps/pipeline --title "Enroll <username>" --body-file FILE`.
    Tell them it is a short public note holding only their GitHub username and
    the one-time code, which stops working once it is used.
-4. **Wait for the invitation.** Every 30 seconds, check
+4. **Wait for the invitation.** Within a minute or two the issue is emptied,
+   closed and locked, with one comment from `github-actions[bot]` (read it
+   with `gh issue view NUMBER -R willoughby-apps/pipeline --comments`; ignore
+   comments from anyone else). The comment never says whether the code was
+   right; it only says the request was read, or that it was not in the right
+   form (then check the code and the username and open one new issue), or
+   that there were too many requests today (then go straight to the message
+   for Andrew below). Every 30 seconds, check
    `gh api user/repository_invitations` for one whose `repository.owner.login`
-   is `willoughby-apps`. It usually arrives within 10 minutes. Meanwhile read
-   the comments on their enroll issue (`gh issue view NUMBER -R willoughby-apps/pipeline --comments`);
-   a comment from `willoughby-apps-bot[bot]` saying the code was not accepted
-   means stop and tell them in plain words. After 30 minutes with nothing,
+   is `willoughby-apps`. If none has arrived 10 minutes after the comment,
    stop and write a two-line message they can send Andrew themselves (their
    GitHub username and that the invite has not arrived); do not open more
    issues.
