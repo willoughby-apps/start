@@ -69,8 +69,11 @@ one at a time).
   $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User');
   ```
 
-  followed by the command itself, in the same command. (The next time Claude
-  starts, the new tools are on its PATH and this is no longer needed.)
+  followed by the command itself, in the same command. (A Claude started
+  later from a **new** PowerShell window has the new tools on its PATH. One
+  started again from this same window does not, since a window keeps the
+  PATH it opened with: that is why "Finish" gives a line that refreshes it
+  first.)
 - Never ask them to type a command. When a window needs them, say exactly what
   it will look like and what to click, then wait for them to tell you it is
   done.
@@ -161,8 +164,13 @@ too.
    the background**, with **both** its output and its error stream going to
    files in a temporary folder: gh prints the code on the error stream, and
    plain output stays empty. In Bash, end the command with `> FILE 2>&1`; in
-   PowerShell use `Start-Process` with both `-RedirectStandardOutput OUT` and
-   `-RedirectStandardError ERR` (two different files) and read both. Without a
+   PowerShell use `Start-Process` with `-WindowStyle Hidden` and both
+   `-RedirectStandardOutput OUT` and `-RedirectStandardError ERR` (two
+   different files), and read both. Without `-WindowStyle Hidden`, Windows
+   opens an empty black window for it that stays up while gh waits, and
+   closing it cancels the sign-in. For example:
+   `Start-Process gh -ArgumentList 'auth','login','--web','--hostname','github.com','--git-protocol','https' -WindowStyle Hidden -RedirectStandardOutput $out -RedirectStandardError $err`
+   (never `-NoNewWindow` with it: the two cannot be combined). Without a
    terminal it does not open a browser; it prints a line
    `First copy your one-time code: XXXX-XXXX` and waits.
 2. Read that code from the files. Tell them the code, then open
@@ -219,18 +227,32 @@ Say: this sends Andrew's system the code, which gives them access to their app.
    for Andrew below). Every 30 seconds, check
    `gh api user/repository_invitations` for one whose `repository.owner.login`
    is `willoughby-apps`. If none has arrived 10 minutes after the comment,
-   stop and write a two-line message they can send Andrew themselves (their
-   GitHub username and that the invite has not arrived); do not open more
-   issues.
+   open the enroll issue **once more**, exactly as in 3 (same code, same
+   account: a code stays with the account that used it first, so a second
+   try works when the first one broke on Andrew's side), and wait the same
+   way. If there is still none 10 minutes after that comment, stop and write
+   a two-line message they can send Andrew themselves (their GitHub username
+   and that the invite has not arrived); do not open more issues.
 5. Accept each such invitation: `gh api -X PATCH user/repository_invitations/ID`.
 
 ## Step 6: put the app on this computer
 
-1. Find Documents (see how-it-works) and make the folder `My Apps` in it if it
-   is not there.
+1. Find where `My Apps` goes (how-it-works, "Where things live"):
+   - **Mac**: `~/Documents/My Apps`. Before the first command that touches
+     Documents, tell them macOS may ask whether the terminal may use the
+     Documents folder and that they click **Allow** (screens.md, "Mac: access
+     to the Documents folder"). If a command there says "Operation not
+     permitted", walk them through that same section, then try again.
+   - **Windows**: `[Environment]::GetFolderPath('MyDocuments')` plus
+     `\My Apps`, unless that Documents path is inside OneDrive (how-it-works
+     says how to tell); then `$env:USERPROFILE\My Apps`. Tell them which, in
+     words they can find ("in your user folder, not in OneDrive, because
+     OneDrive can damage an app's history while it syncs").
+   Make the folder `My Apps` there if it is not there, and write down the
+   full path: the Finish line uses it.
 2. For each of their apps (how-it-works, "Their apps": private, one they can
    push to, never `pipeline`, `start` or `app-template`) that is not already a
-   folder there, `gh repo clone willoughby-apps/REPO "<Documents>/My Apps/REPO"`.
+   folder there, `gh repo clone willoughby-apps/REPO "<My Apps>/REPO"`.
 3. In each new folder:
    - set the git identity from `gh api user` (name, or the login if they have
      no name; email `<id>+<login>@users.noreply.github.com`) with
@@ -243,7 +265,8 @@ Say: this sends Andrew's system the code, which gives them access to their app.
    to their phone without a review.
 5. Tell them where the folder is, in words they can find ("In your Documents
    folder there is now a folder called My Apps, and inside it
-   `sam-hello`. That is your app.").
+   `sam-hello`. That is your app."; on a Windows PC using your user folder,
+   "In your user folder, the one with your name...").
 
 ## Step 7: keep this helper up to date
 
@@ -276,8 +299,11 @@ Walk them through, as the last things they do with their hands today, one
 screen at a time from screens.md:
 1. **Joining Andrew's team** ("Apple: joining Andrew's team"): Apple's email
    inviting them to App Store Connect, signing in with their Apple Account,
-   the code on their phone, and any terms. If it has not arrived, check spam;
-   it can take a while after Andrew sets things up, and this step can wait.
+   the code on their phone, and any terms. **Apple's invitation works for 3
+   days**, so do this today if it has arrived. If it has not arrived, check
+   spam; it can come a little after Andrew sets things up. If the one they
+   have is older than 3 days, Andrew's system sends a new one by itself;
+   if none comes within a day, offer `/willoughby-apps:help`.
 2. **TestFlight** ("TestFlight: installing and matching the Apple ID"): install
    it on their iPhone, and check the iPhone's Apple Account is the one Andrew
    invited.
@@ -291,13 +317,17 @@ For their first app repo, get the newest commit on `main`
 `willoughby/check` status from `willoughby-apps-bot[bot]` (how-it-works has the
 command and the rule about whose status counts).
 
-- **success**: fetch the screenshot from the bot's comment, look at it, and
-  open it for them: "This is your app, built and checked. Andrew's system is
-  putting it on TestFlight; it will show up in the TestFlight app on your
-  phone."
+- **success**: on a Mac, fetch the screenshot from the bot's comment (its
+  line, exactly as written), look at it, and open it for them. On Windows,
+  leave the picture for later: this session may have no Bash tool yet, and
+  PowerShell damages pictures (how-it-works, "Windows: which shell"). Say:
+  "This is your app, built and checked. Andrew's system is putting it on
+  TestFlight; it will show up in the TestFlight app on your phone once you
+  have joined his team (step 8)."
 - **pending** or no status yet: "Andrew's system is checking and building your
-  app now. It takes up to half an hour." Offer to wait with them (as
-  how-it-works describes) and show the picture when it arrives.
+  app now. It takes up to half an hour." Do not wait here: once Claude is open
+  in the app's folder (Finish), it can wait without asking them anything, and
+  it shows the picture then.
 - **failure** or **error** on the untouched starter app is Andrew's problem,
   not theirs: say so and offer `/willoughby-apps:help`.
 
@@ -311,11 +341,15 @@ End with, in plain words:
   in it: carrying on here, Claude would ask them about every save and every
   check. Tell them exactly what to do:
   - in a terminal: type `/exit`, then paste the one line you give them, with
-    the real folder written out: on a Mac
-    `cd "$HOME/Documents/My Apps/REPO" && claude`; on Windows
-    `cd "$([Environment]::GetFolderPath('MyDocuments'))\My Apps\REPO"; claude`;
-  - in the Claude app: start a new session and choose the folder
-    `Documents > My Apps > REPO`;
+    the real folder from step 6 written out in full: on a Mac
+    `cd "/Users/sam/Documents/My Apps/sam-hello" && claude`; on Windows (all
+    one line: the first part gives this window the tools setup installed,
+    since a window keeps the PATH it was opened with)
+    `$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User'); cd "C:\Users\Jeff\My Apps\jeff-hello"; claude`.
+    Typed in their own window, it asks nothing. (Closing every terminal
+    window and opening a new PowerShell from the Start menu works too.);
+  - in the Claude app: start a new session and choose that folder
+    (`My Apps > REPO`, in Documents or in their user folder);
   - the first time, Claude asks whether they trust that folder and shows the
     commands it lets Claude run (screens.md, "Claude: trusting the app
     folder"): that is their own app from Andrew, and they choose yes;

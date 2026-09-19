@@ -77,7 +77,7 @@ and reads a new code.
 
 ## Claude: trusting the app folder
 
-The first time Claude opens in their app's folder (`Documents/My Apps/<repo>`),
+The first time Claude opens in their app's folder (`My Apps/<repo>`),
 before anything else, Claude itself asks whether they trust the files in this
 folder, and lists what the folder's settings would let Claude do: the `git`
 and `gh` commands that save and send their app, and on a Mac `sips` and
@@ -93,13 +93,32 @@ Claude.
    choose yes this time. Until they do, Claude asks before every command, and
    a check (15 to 30 minutes of waiting) turns into a question every minute.
 
+## Mac: access to the Documents folder
+
+The first time a command touches the Documents folder (making `My Apps` in
+it, or putting the app there), macOS may show a box: **"Terminal" would like
+to access files in your Documents folder.** (It names the program Claude runs
+in: Terminal, iTerm, or Claude.) Tell them before that command that it may
+appear.
+
+1. They click **Allow**. macOS asks once per program.
+2. If they clicked **Don't Allow**, or the command says **"Operation not
+   permitted"**: open the Apple menu > **System Settings** > **Privacy &
+   Security** > **Files & Folders**, find the program (Terminal, iTerm or
+   Claude), and turn on **Documents Folder**. macOS may say the program must
+   quit and reopen: then quit Claude, quit the program, open it again and
+   start Claude again. (Apple: apps need the person's consent before they
+   use Documents, and Files & Folders is where it is changed afterwards.)
+
 ## Apple: joining Andrew's team
 
 Andrew invites their Apple ID email to his App Store Connect team, so they can
 test their own app before anyone else.
 
 1. An email from Apple arrives saying they have been invited to join Andrew's
-   team in **App Store Connect**. Check spam if it is not there. It must go to the same email as
+   team in **App Store Connect**. Check spam if it is not there. **It works
+   for 3 days** (Apple's limit); if it ran out, Andrew's system sends a new
+   one by itself, so wait for that email. It must go to the same email as
    their Apple ID; if Andrew used another address, tell Claude, which asks
    Andrew with `/willoughby-apps:help`.
 2. They tap or click **Accept invitation** (or **Join**). A page asks them to

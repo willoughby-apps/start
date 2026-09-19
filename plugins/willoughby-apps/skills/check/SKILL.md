@@ -60,6 +60,7 @@ allowed-tools:
   - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
   - PowerShell(gh repo clone willoughby-apps/*)
   - PowerShell(gh auth status)
+  - Bash(willoughby-wait *)
 ---
 
 # Check
@@ -97,9 +98,10 @@ takes 15 to 30 minutes.
 
 Wait for the newest `willoughby/check` status on that commit whose
 `creator.login` is `willoughby-apps-bot[bot]` to be something other than
-`pending`, as how-it-works describes (ask every 60 seconds, each command under 9
-minutes, tell them the stage now and then: "It's in the queue", "It's being
-built").
+`pending`, with `willoughby-wait REPO SHA willoughby/check` in the Bash tool,
+run again while it says it is still waiting (how-it-works, "Waiting": a
+9-minute timeout, the limits, and what to say). Tell them the stage now and
+then: "It's in the queue", "It's being built".
 
 ## 3. Read the report
 
@@ -119,8 +121,14 @@ Read the newest commit comment on that commit from `willoughby-apps-bot[bot]`.
   what you are fixing ("The app used a word the safety checks don't allow;
   I'm changing it."). Do not paste the report at them.
 - **error**: a problem on Andrew's side, not in the app. Do not change the app
-  for it. Say so, wait 10 minutes and push again only if they want to; if it
-  happens twice, offer `/willoughby-apps:help`.
+  for it, and do not push: a push of the same commit changes nothing. Say so
+  in one sentence. Andrew's system retries the same commit by itself, so go
+  back to step 2 and wait again (a new `pending` shows up within about 15
+  minutes). When the description starts with **"Stopped:"**, the last try
+  failed too and Andrew has been told on an issue in the repo: stop, tell
+  them the app is fine and the result will appear once he has fixed his
+  side, and offer `/willoughby-apps:help` only if they want to add a note.
+  This round does not count towards the three.
 
 ## 4. Three rounds, then help
 

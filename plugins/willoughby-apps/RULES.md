@@ -29,6 +29,7 @@ something a rule forbids, stop and use `/willoughby-apps:help` so Andrew can dec
 - The app targets iOS 18.0. Never change the deployment target.
 - Swift packages only from Andrew's allowlist, pinned to an exact version. No frameworks, Carthage or local packages.
 - Every path in `project.yml` stays inside the repo.
+- Keep `ITSAppUsesNonExemptEncryption: false` in the app target's `info: properties:` in `project.yml`. Never remove it or set it to true.
 
 ### Files in the repo
 

@@ -61,6 +61,7 @@ allowed-tools:
   - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
   - PowerShell(gh repo clone willoughby-apps/*)
   - PowerShell(gh auth status)
+  - Bash(willoughby-wait *)
 ---
 
 # Release

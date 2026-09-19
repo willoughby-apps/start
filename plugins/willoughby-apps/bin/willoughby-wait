@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# willoughby-wait REPO SHA [CONTEXT]
+#
+# Waits for Andrew's system to finish with one commit: asks GitHub every 60
+# seconds for the newest status in CONTEXT (default willoughby/check) written
+# by willoughby-apps-bot[bot], and stops as soon as it is not `pending`, or
+# after 8 minutes at most, so one run stays under Claude's 10-minute limit
+# for a single command.
+#
+# Prints one line, "<state> <description>" ("none" when there is no status
+# yet), and exits 0 when the result is in, 3 when it is still pending or
+# missing after 8 minutes (run it again), 2 when the arguments are wrong.
+#
+# It only ever reads from GitHub. It is on Claude's Bash tool PATH while the
+# willoughby-apps plugin is on (the plugin's bin/ folder), and the app
+# folder's settings allow it without asking, so a wait never becomes a
+# question every minute. On Windows it runs in Git Bash, which setup
+# installed with Git.
+set -u
+
+repo=${1:-}
+sha=${2:-}
+context=${3:-willoughby/check}
+
+if ! [[ $repo =~ ^[a-z0-9][a-z0-9-]{0,62}$ ]] || [[ $repo == pipeline || $repo == start || $repo == app-template ]]; then
+  echo "usage: willoughby-wait REPO SHA [CONTEXT]  (REPO is the app's repo name, like sam-hello)" >&2
+  exit 2
+fi
+if ! [[ $sha =~ ^[0-9a-f]{40}$ ]]; then
+  echo "usage: willoughby-wait REPO SHA [CONTEXT]  (SHA is the full 40-character commit, from git rev-parse HEAD)" >&2
+  exit 2
+fi
+case $context in
+  willoughby/check | willoughby/release | willoughby/testers-request | willoughby/testflight | willoughby/beta | willoughby/testers) ;;
+  *)
+    echo "usage: willoughby-wait REPO SHA [CONTEXT]  (CONTEXT is one of willoughby/check, willoughby/release, willoughby/testers-request, willoughby/testflight, willoughby/beta, willoughby/testers)" >&2
+    exit 2
+    ;;
+esac
+
+# The tests shorten these; nothing else sets them. Never longer than 8 minutes.
+limit=${WILLOUGHBY_WAIT_LIMIT:-480}
+interval=${WILLOUGHBY_WAIT_INTERVAL:-60}
+[[ $limit =~ ^[0-9]+$ ]] && ((limit <= 480)) || limit=480
+[[ $interval =~ ^[0-9]+$ ]] && ((interval >= 1 && interval <= 60)) || interval=60
+
+# gh's --jq takes no variables; the context is one of the fixed names above.
+filter='[.[] | select(.context == "'"$context"'" and .creator.login == "willoughby-apps-bot[bot]")][0] // empty | "\(.state) \(.description // "")"'
+start=$SECONDS
+line=""
+while :; do
+  line=$(gh api "repos/willoughby-apps/$repo/commits/$sha/statuses" -f per_page=100 \
+           --jq "$filter" --method GET --hostname github.com 2>/dev/null | head -n 1) || line=""
+  state=${line%% *}
+  if [[ -n $line && $state != pending ]]; then
+    echo "$line"
+    exit 0
+  fi
+  if ((SECONDS - start + interval > limit)); then
+    echo "${line:-none} (still waiting: run willoughby-wait again)"
+    exit 3
+  fi
+  sleep "$interval"
+done

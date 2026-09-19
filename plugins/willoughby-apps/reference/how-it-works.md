@@ -18,13 +18,25 @@ Facts for Claude. The person you are helping never needs to read this.
   listing shows: `pipeline` and `start` are public, so every GitHub account
   sees them, and they are Andrew's, not the person's. Every helper that looks
   for "their apps" uses exactly this list.
-- On their computer each app is a folder under **`Documents/My Apps/<repo>`**.
-  On Windows, find Documents with
-  `[Environment]::GetFolderPath('MyDocuments')` (it may be inside OneDrive);
-  on a Mac it is `~/Documents`.
+- On their computer each app is a folder under **`My Apps/<repo>`**, and
+  `My Apps` lives here:
+  - **Mac**: in Documents, `~/Documents/My Apps`. The first command that
+    touches Documents makes macOS ask whether the terminal (or the Claude app)
+    may use the Documents folder: they click **Allow** (screens.md, "Mac:
+    access to the Documents folder"). A command that fails with "Operation
+    not permitted" there means that permission is off.
+  - **Windows**: in Documents (`[Environment]::GetFolderPath('MyDocuments')`),
+    **unless Documents is inside OneDrive**, which is common with a Microsoft
+    account: then directly in their user folder, `$env:USERPROFILE\My Apps`.
+    OneDrive syncing a live `.git` folder is widely reported to get stuck or
+    damage it, and to lock files part-way through a push. Documents is inside
+    OneDrive when its path starts with `$env:OneDrive`,
+    `$env:OneDriveConsumer` or `$env:OneDriveCommercial` (whichever are set),
+    or has a folder named `OneDrive` or `OneDrive - <something>` in it.
+    Setup chooses once and says where; after that, look in both places.
 - **Work only on `main`.** Never make branches, never force-push, never
   rewrite history, never delete tags.
-- If you are not already in an app folder, look under `Documents/My Apps`. With
+- If you are not already in an app folder, look under `My Apps` (above). With
   one app, use it; with several, ask which (by name). Read that folder's
   `CLAUDE.md` before changing anything.
 - The app is SwiftUI, iPhone only, iOS 18.0, described by `project.yml`
@@ -83,12 +95,35 @@ Andrew?"**, and on a yes, release. Commands are only shortcuts into it.
     say yes, the list is not used.
   - A command that **starts with `cd`** into another folder, or (on Windows)
     with the `$env:Path` refresh that setup used. Run commands from the app
-    folder itself, one per line; in the app folder a new Claude already has
-    git and gh on its path.
+    folder itself, one per line. On Windows, if `git` or `gh` is "not
+    recognized" there, Claude was started from a window opened before they
+    were installed: never add the refresh to your commands; ask them to quit
+    Claude and start it again with setup's "Finish" line, which refreshes the
+    path in their own window first.
 - **Reading from GitHub**: every `gh api` read of `repos/willoughby-apps/...`
   ends with exactly `--method GET --hostname github.com`, as the last two
   options. That is the form the folder allows: gh uses the last `--method` and
-  `--hostname` it is given, so that command can only read from GitHub.
+  `--hostname` it is given, so that command can only read from GitHub. Put
+  options like `-f ref=<commit>` before them, never a `?` in the path (in the
+  Mac's shell an unquoted `?` is a file pattern, and the command stops with
+  "no matches found").
+
+## Windows: which shell
+
+On Windows you have PowerShell and, once Git is installed, the Bash tool
+(Git Bash). PowerShell may be **Windows PowerShell 5.1** (the one built into
+Windows), which differs from newer PowerShell in ways that break things:
+
+- `>` and `Out-File` write text as UTF-16, and `>` **corrupts binary data**
+  such as a picture (Microsoft: "PowerShell doesn't support the redirection of
+  binary data"). So run **picture fetches** (the report's `... > build/...`
+  lines) and **`willoughby-wait`** with the **Bash tool**, exactly as written.
+- `&&` and `||` do not exist before PowerShell 7: in PowerShell, separate
+  commands with `;`, or run them one at a time.
+- `Set-Content`, `Out-File -Encoding UTF8` and `>` add an invisible mark (a
+  byte order mark) or write UTF-16: write every text file with your own
+  file-writing tool, never from PowerShell.
+- `git` and `gh` commands are the same in both shells.
 
 ## The rules
 
@@ -108,7 +143,12 @@ never work around one: use `/willoughby-apps:help` instead.
    - a commit status with context **`willoughby/check`** (or
      **`willoughby/release`** for a version tag): `pending`, `success`,
      `failure` (the checks or the build found a problem in the app) or `error`
-     (a problem on Andrew's side, not in the app);
+     (a problem on Andrew's side, not in the app). After an `error`, Andrew's
+     system checks the same commit again by itself (a new `pending` appears
+     within about 15 minutes), up to three tries in all; when the last try
+     fails too, the status description starts with **"Stopped:"** and Andrew
+     is told on an issue in the repo. Nothing to change in the app, and
+     nothing to push, for any of that;
    - a commit comment with the headline, every blocked rule with its fix, the
      compile errors, and a simulator screenshot.
 4. At most 20 checks run per person per day, so batch changes into one push
@@ -132,7 +172,8 @@ run on GitHub, which is public: never send the person there, since it shows
 nothing of their app.
 
 The comment's screenshot line gives the `gh api` command that fetches the
-picture. Run it exactly, saving into the app folder's `build` folder (make it if
+picture. Run it exactly, with the **Bash tool** (on Windows too: see "Windows:
+which shell"), from the app folder, saving into its `build` folder (make it if
 it is not there; `.git/info/exclude` keeps `build/` out of every commit, and a
 file inside the app folder saves without asking): `... > build/screenshot.png`.
 Look at it yourself with your file reading tool, and open it for the person if
@@ -140,11 +181,31 @@ they want to see it (`open FILE` on a Mac, `Start-Process FILE` on Windows).
 
 ## Waiting
 
-A check takes a while. Wait in a loop that asks every 60 seconds, and keep each
-single command under 9 minutes; run it again until the result arrives. Tell the
-person what stage it is at in between, not every minute. If there is still no
-status at all after 20 minutes, the day's 20 checks may be used up, or Andrew's
-system may be paused: say so plainly, and offer `/willoughby-apps:help`.
+A check takes a while. Wait with the plugin's own command, with the **Bash
+tool** (on Windows too), from the app folder:
+
+```
+willoughby-wait REPO SHA willoughby/check
+```
+
+(`willoughby/release` for a version tag). It asks GitHub every 60 seconds for
+the bot's newest status in that context and returns as soon as it is not
+`pending`, or after 8 minutes at most. Give the Bash tool a timeout of 9
+minutes (540000 ms). It prints `<state> <description>`: exit code 0 means the
+result is in; 3 means still waiting, so run it again. The folder allows it
+without asking; never write your own loop with `sleep`, which asks every time.
+
+Tell the person what stage it is at in between, not every minute. Then:
+- **No status at all after 30 minutes**: the day's 20 checks may be used up,
+  or Andrew's system may be paused. Say so plainly, and offer
+  `/willoughby-apps:help`.
+- **Still `pending` after 2 hours**: stop waiting. Say Andrew's system retries
+  a stuck check by itself and tells him if it cannot, and offer
+  `/willoughby-apps:help`.
+- **`error`**: see "What happens after a push": change nothing, push nothing,
+  and wait again for the retry. When the description starts with "Stopped:",
+  stop: Andrew has been told, and the result appears on the commit when he
+  has fixed it.
 
 ## Releases
 
@@ -178,8 +239,13 @@ people.
   sent again), then TestFlight emails them and every version reaches them
   with no wait for Apple.
 - **Outside testers** go below a line that says exactly `# external:`. They
-  join the app's outside test group instead, and Apple reviews each new
-  version before they get it, which can take a day or two.
+  join the app's outside test group instead. Apple reviews a build before
+  outside testers get it: the first build of each version gets a full review,
+  later builds of the same version might not (Apple's words), and a new
+  version (`v1.2` after `v1.1`) can wait for review again. Reviews usually
+  take a day or two at most. The bot's status **`willoughby/beta`** on the
+  released commit says in plain words where it is (for example "is waiting
+  for Apple's beta review"); pass that on when they ask.
 - **Nothing changes until Andrew approves it.** A pushed change to
   `testers.txt` alone becomes a "Testers request" issue in the repo (opened by
   `willoughby-apps-bot[bot]`, status `willoughby/testers-request` on the

@@ -60,6 +60,7 @@ allowed-tools:
   - PowerShell(gh repo list willoughby-apps --visibility private --json name,url,viewerPermission)
   - PowerShell(gh repo clone willoughby-apps/*)
   - PowerShell(gh auth status)
+  - Bash(willoughby-wait *)
 ---
 
 # Status
@@ -75,7 +76,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk that way, and read
    list their apps exactly as how-it-works says under "Their apps"
    (`gh repo list willoughby-apps --visibility private --json name,url,viewerPermission`,
    only the ones they can push to, never `pipeline`, `start` or `app-template`).
-2. For any repo that has no folder in `Documents/My Apps` yet, clone it and set
+2. For any repo that has no folder in `My Apps` yet (how-it-works, "Where things live"), clone it and set
    it up exactly as setup's step 6 does
    (`${CLAUDE_PLUGIN_ROOT}/skills/setup/SKILL.md`), without changing anything
    in it. Tell them about the new app and where its folder is.
