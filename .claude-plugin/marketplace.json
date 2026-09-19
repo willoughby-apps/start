@@ -1,0 +1,17 @@
+{
+  "name": "willoughby-apps",
+  "owner": {
+    "name": "Andrew Cohen",
+    "url": "https://github.com/willoughby-apps"
+  },
+  "metadata": {
+    "description": "Make an iPhone app by talking to Claude, with Andrew's help."
+  },
+  "plugins": [
+    {
+      "name": "willoughby-apps",
+      "source": "./plugins/willoughby-apps",
+      "description": "Sets up your computer, then helps you make, check and release your iPhone app. No programming needed."
+    }
+  ]
+}

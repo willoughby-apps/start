@@ -1,0 +1,12 @@
+{
+  "name": "willoughby-apps",
+  "displayName": "Willoughby Apps",
+  "description": "Sets up your computer, then helps you make, check and release your iPhone app. No programming needed.",
+  "author": {
+    "name": "Andrew Cohen",
+    "url": "https://github.com/willoughby-apps"
+  },
+  "homepage": "https://github.com/willoughby-apps/start",
+  "repository": "https://github.com/willoughby-apps/start",
+  "keywords": ["iphone", "testflight", "beginners"]
+}
