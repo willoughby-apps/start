@@ -14,7 +14,9 @@ Read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk that way, and read
 
 1. `gh api user/repository_invitations`: accept any invitation from
    `willoughby-apps` (`gh api -X PATCH user/repository_invitations/ID`), then
-   list their repos: `gh repo list willoughby-apps --json name,url`.
+   list their apps exactly as how-it-works says under "Their apps"
+   (`gh repo list willoughby-apps --visibility private --json name,url,viewerPermission`,
+   only the ones they can push to, never `pipeline`, `start` or `app-template`).
 2. For any repo that has no folder in `Documents/My Apps` yet, clone it and set
    it up exactly as setup's step 6 does
    (`${CLAUDE_PLUGIN_ROOT}/skills/setup/SKILL.md`), without changing anything
@@ -22,7 +24,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/agents/guide.md` and talk that way, and read
 
 ## 2. Each app
 
-For each repo, gather quietly (do not narrate every command):
+For each of their apps, gather quietly (do not narrate every command):
 
 - **Unsaved work** in its folder (`git status --porcelain`) and commits not yet
   sent (`git status -sb` shows "ahead").

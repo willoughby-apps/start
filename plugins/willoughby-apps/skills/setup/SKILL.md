@@ -33,9 +33,28 @@ the whole setup, and read `${CLAUDE_PLUGIN_ROOT}/reference/how-it-works.md`.
 - On Windows you may have PowerShell only, or Git Bash too once Git is
   installed. Use whichever shell tool you have; the `git` and `gh` commands are
   the same in both, only quoting differs.
+- **Windows, after you install Git or `gh` in this setup:** each command you
+  run may start from the PATH Claude had when it started, before the install,
+  so a bare `git` or `gh` can fail with "is not recognized" even right after it
+  worked. From then on, for the rest of this setup, start **every** PowerShell
+  command with the refresh
+
+  ```
+  $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User');
+  ```
+
+  followed by the command itself, in the same command. (The next time Claude
+  starts, the new tools are on its PATH and this is no longer needed.)
 - Never ask them to type a command. When a window needs them, say exactly what
   it will look like and what to click, then wait for them to tell you it is
   done.
+- **Permission questions.** Many commands here (installers, downloads, `open`,
+  `winget`, `xcode-select`) make Claude ask them first whether it may run the
+  command, showing the command itself. Before the first one, tell them: "Claude
+  will sometimes ask you before it runs something on your computer. I will say
+  what each one is for; choose the option that allows it this once." Then
+  before each such command say in one sentence what it does ("This downloads
+  GitHub's installer from GitHub."). Never ask them to allow something always.
 
 ## Step 1: git
 
@@ -60,10 +79,10 @@ can tell you when it says the software was installed. Then check
 2. Run `winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements`.
    Tell them first: Windows may ask "Do you want to allow this app to make
    changes to your device?"; click **Yes**.
-3. A new install is not on this window's PATH yet. Refresh it with
-   `$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')`,
-   or call `& "$env:ProgramFiles\Git\cmd\git.exe"` directly, and confirm
-   `git --version`.
+3. A new install is not on Claude's PATH yet. Confirm with the refresh and
+   `git --version` in one command (see "Windows, after you install" above),
+   and keep starting every later PowerShell command in this setup with that
+   refresh.
 
 ## Step 2: the GitHub tool (`gh`)
 
@@ -88,8 +107,9 @@ Check `gh --version`. If it is missing:
 
 **Windows.** Run
 `winget install --id GitHub.cli -e --source winget --accept-package-agreements --accept-source-agreements`
-(same "allow changes" window: **Yes**), refresh PATH as in step 1 or call
-`& "$env:ProgramFiles\GitHub CLI\gh.exe"`, and confirm `gh --version`.
+(same "allow changes" window: **Yes**), then confirm with the refresh and
+`gh --version` in one command, and keep the refresh on every later PowerShell
+command in this setup.
 
 ## Step 3: a GitHub account
 
@@ -106,10 +126,14 @@ all they need. Wait for them to say they are in.
 ## Step 4: sign in the GitHub tool
 
 1. Start `gh auth login --web --hostname github.com --git-protocol https` **in
-   the background**, with its output going to a file in a temporary folder.
-   Without a terminal it does not open a browser; it prints a line
+   the background**, with **both** its output and its error stream going to
+   files in a temporary folder: gh prints the code on the error stream, and
+   plain output stays empty. In Bash, end the command with `> FILE 2>&1`; in
+   PowerShell use `Start-Process` with both `-RedirectStandardOutput OUT` and
+   `-RedirectStandardError ERR` (two different files) and read both. Without a
+   terminal it does not open a browser; it prints a line
    `First copy your one-time code: XXXX-XXXX` and waits.
-2. Read that code from the file. Tell them the code, then open
+2. Read that code from the files. Tell them the code, then open
    `https://github.com/login/device` for them. They type or paste the code,
    click **Continue**, then the green **Authorize** button. The code works for 15
    minutes; if it runs out, start again.
@@ -122,9 +146,12 @@ all they need. Wait for them to say they are in.
 Say: this sends Andrew's system the code, which gives them access to their app.
 
 1. **Already done?** List pending invitations with
-   `gh api user/repository_invitations`, and repos they can already see with
-   `gh repo list willoughby-apps --json name`. If either shows a
-   `willoughby-apps` repo, skip to step 6.
+   `gh api user/repository_invitations`, and their apps as how-it-works says
+   under "Their apps" (private repos they can push to, never `pipeline`,
+   `start` or `app-template`; the first two are public, so every account sees
+   them). If there is an
+   invitation from `willoughby-apps` or at least one app, skip to step 5's
+   part 5 (accept) and then step 6.
 2. **Already asked?** `gh issue list -R willoughby-apps/pipeline --author @me --state all --json number,createdAt`.
    If they opened one in the last 30 minutes, do not open another; go to 4
    and wait on it. Never open more than three in a day: after that the code
@@ -134,8 +161,10 @@ Say: this sends Andrew's system the code, which gives them access to their app.
 
    Title: `Enroll <username>`
 
-   Body (three lines; write it to a temporary file and pass it with
-   `--body-file`):
+   Body (three lines; write it to a temporary file with your own file-writing
+   tool, which saves plain UTF-8, and pass it with `--body-file`; on Windows
+   never write it with `Set-Content` or `Out-File`, which add an invisible
+   mark at the start that makes the request unreadable):
 
    ```
    <!-- willoughby-enroll v1 -->
@@ -166,8 +195,9 @@ Say: this sends Andrew's system the code, which gives them access to their app.
 
 1. Find Documents (see how-it-works) and make the folder `My Apps` in it if it
    is not there.
-2. For each `willoughby-apps` repo they can see that is not already a folder
-   there, `gh repo clone willoughby-apps/REPO "<Documents>/My Apps/REPO"`.
+2. For each of their apps (how-it-works, "Their apps": private, one they can
+   push to, never `pipeline`, `start` or `app-template`) that is not already a
+   folder there, `gh repo clone willoughby-apps/REPO "<Documents>/My Apps/REPO"`.
 3. In each new folder:
    - set the git identity from `gh api user` (name, or the login if they have
      no name; email `<id>+<login>@users.noreply.github.com`) with

@@ -19,6 +19,10 @@ job is to say what they want.
   an error message. Do it yourself. When something needs their hands (a button
   in a window, a password, a code on their phone), say exactly what they will
   see and exactly what to click, then wait for them to say it is done.
+- Claude sometimes asks them before running a command, and shows the command.
+  Before one of those, say in one sentence what it does and that it is safe to
+  allow this once, so a box full of unfamiliar text is never a surprise. Never
+  ask them to allow something always.
 - Never paste error output, logs or code at them. When something fails, say
   what went wrong in one sentence and what you are doing about it.
 - Before a big change to their app, describe it in two or three sentences and

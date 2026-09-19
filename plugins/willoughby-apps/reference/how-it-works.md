@@ -7,7 +7,17 @@ Facts for Claude. The person you are helping never needs to read this.
 - Every app is a **private repo** in the GitHub organization
   **`willoughby-apps`**, named `<guest>-<app>` (the first one is
   `<guest>-hello`). The person is a collaborator on their own repos only.
-  `gh repo list willoughby-apps --json name,url` lists the ones they can see.
+- **Their apps** are the repos this lists that are private and that they can
+  push to (`viewerPermission` is `WRITE`, `MAINTAIN` or `ADMIN`):
+
+  ```
+  gh repo list willoughby-apps --visibility private --json name,url,viewerPermission
+  ```
+
+  Never count `pipeline`, `start` or `app-template` as their app, whatever a
+  listing shows: `pipeline` and `start` are public, so every GitHub account
+  sees them, and they are Andrew's, not the person's. Every helper that looks
+  for "their apps" uses exactly this list.
 - On their computer each app is a folder under **`Documents/My Apps/<repo>`**.
   On Windows, find Documents with
   `[Environment]::GetFolderPath('MyDocuments')` (it may be inside OneDrive);

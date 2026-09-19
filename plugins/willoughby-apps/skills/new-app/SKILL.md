@@ -39,8 +39,10 @@ key), say so gently and note it for Andrew in the request.
 
 ## 3. Send it to Andrew
 
-1. Their first app's repo is the one named `<guest>-hello` in
-   `gh repo list willoughby-apps --json name`. The request goes there.
+1. Their first app's repo is the one named `<guest>-hello` among their apps
+   (how-it-works, "Their apps":
+   `gh repo list willoughby-apps --visibility private --json name,url,viewerPermission`,
+   only the ones they can push to). The request goes there.
 2. Make sure the label exists (it is fine if it already does):
    `gh label create new-app -R willoughby-apps/REPO --color 1D76DB --description "A request for a new app" --force`.
 3. Open the issue with `--body-file` (write the body to a temporary file):

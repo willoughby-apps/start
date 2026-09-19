@@ -23,9 +23,13 @@ last one:
 /willoughby-apps:setup ABCD-EFGH
 ```
 
-In the Claude desktop app, if Claude says `/plugin` is not available there, open
-the app's plugin browser instead, add the marketplace `willoughby-apps/start`,
-install **willoughby-apps**, and then paste the last line.
+When the second line asks where to install, choose **User scope** (for you, in
+every folder).
+
+In the Claude desktop app, if Claude says `/plugin` is not available there,
+click the **+** next to the message box, choose **Plugins**, then **Add
+plugin**, add the marketplace `willoughby-apps/start`, install
+**willoughby-apps** for your user account, and then paste the last line.
 
 Claude then sets up your computer one step at a time and puts your first app on
 it. It takes 15 to 30 minutes, and you only click a few buttons.
