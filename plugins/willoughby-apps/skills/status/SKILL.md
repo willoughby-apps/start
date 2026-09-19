@@ -94,8 +94,27 @@ For each of their apps, gather quietly (do not narrate every command):
   tag (`git ls-remote --tags origin`) and its `willoughby/release` status.
 - **Open issues** (`gh issue list -R willoughby-apps/REPO --state open --json number,title,labels,author,url,updatedAt`):
   release requests (label `release-request`, author `willoughby-apps-bot[bot]`:
-  waiting for Andrew), `new-app` requests and `needs-andrew` questions (waiting
-  for Andrew; read the comments for a reply from him).
+  waiting for Andrew), testers requests (label `testers-request`, same author:
+  a change to `testers.txt` waiting for Andrew), `new-app` requests and
+  `needs-andrew` questions (waiting for Andrew; read the comments for a reply
+  from him).
+- **Testers**: on the latest version's commit, the bot's newest
+  `willoughby/beta` status (outside testers and Apple's beta review), and on
+  the newest commit, its newest `willoughby/testers` status (who was invited
+  or added), both read with
+  `gh api repos/willoughby-apps/REPO/commits/SHA/statuses --method GET --hostname github.com`.
+  Say what the description says in your own plain words:
+  - "waiting for Apple's beta review" or "in Apple's beta review": Apple looks
+    at each new version before outside testers (the people below
+    `# external:` in `testers.txt`) can install it, which can take a day or
+    two. Nothing for them to do:
+    the testers get an email when Apple is done. Friends and family (above
+    `# external:`) do not wait for this.
+  - "ready for testers" or "with testers": outside testers can install it now.
+  - "rejected by Apple's beta review": Andrew has been told and will say what
+    to change.
+  - "still processing at Apple": Apple is still preparing the upload; it goes
+    to the testers by itself when that finishes.
 - **Recently closed** release requests
   (`gh issue list -R willoughby-apps/REPO --state closed --label release-request --limit 5 --json number,title,closedAt,url`)
   and the last comment on each: on TestFlight, or not approved and why.
