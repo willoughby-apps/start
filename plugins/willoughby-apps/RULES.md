@@ -82,6 +82,7 @@ something a rule forbids, stop and use `/willoughby-apps:help` so Andrew can dec
 - Bundle ID starts with `com.willoughbytools.` and is set by Andrew.
 - Platform `iOS`, deployment target `18.0`, `TARGETED_DEVICE_FAMILY: "1"` (iPhone only).
 - Targets: `application` (1 to 1), `bundle.unit-test` (0 to 1), `bundle.ui-testing` (0 to 1).
+- Extra target types Andrew has enabled, per app: `com.willoughbytools.sam.hello`: `app-extension` (0 to 1).
 
 **Never in `project.yml`** (at any depth)
 
@@ -170,7 +171,7 @@ something a rule forbids, stop and use `/willoughby-apps:help` so Andrew can dec
 
 **Entitlements Andrew has enabled**
 
-- None for any app yet.
+- `com.willoughbytools.sam.hello`: `aps-environment`, `com.apple.developer.healthkit`, `com.apple.developer.icloud-container-identifiers`, `com.apple.developer.icloud-services`
 
 **Privacy keys** (declare it in `project.yml` as `INFOPLIST_KEY_<key>`, and list it in `README.md`)
 
